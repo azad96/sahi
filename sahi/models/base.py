@@ -18,6 +18,8 @@ class DetectionModel:
         device: Optional[str] = None,
         mask_threshold: float = 0.5,
         confidence_threshold: float = 0.3,
+        nms_threshold: float = 0.45,
+        classes = None,
         category_mapping: Optional[Dict] = None,
         category_remapping: Optional[Dict] = None,
         load_at_init: bool = True,
@@ -51,6 +53,8 @@ class DetectionModel:
         self.device = device
         self.mask_threshold = mask_threshold
         self.confidence_threshold = confidence_threshold
+        self.nms_threshold = nms_threshold
+        self.classes = classes
         self.category_mapping = category_mapping
         self.category_remapping = category_remapping
         self.image_size = image_size

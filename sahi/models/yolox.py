@@ -23,11 +23,10 @@ from yolox.data.datasets import COCO_CLASSES
 from sahi.prediction import ObjectPrediction
 from sahi.utils.compatibility import fix_full_shape_list, fix_shift_amount_list
 from sahi.utils.cv import get_bbox_from_bool_mask
-from sahi.utils.torch import cuda_is_available, empty_cuda_cache
 
 from yolox.utils import postprocess
 from yolox.data.data_augment import ValTransform
-
+from yolox.exp import get_exp
 
 class YoloXDetectionModel(DetectionModel):
     def load_model(self):
@@ -38,8 +37,9 @@ class YoloXDetectionModel(DetectionModel):
             import yolox
         except ImportError:
             raise ImportError("Please run pip install -U yolox")
-        current_exp = importlib.import_module(self.config_path)
-        exp = current_exp.Exp()
+        # current_exp = importlib.import_module(self.config_path)
+        # exp = current_exp.Exp()
+        exp = get_exp(self.config_path, None)
         
         model = exp.get_model()
         model.cuda()
@@ -77,8 +77,8 @@ class YoloXDetectionModel(DetectionModel):
         with torch.no_grad():
             prediction_result = self.model(tensor_img)
             prediction_result = postprocess(
-                    prediction_result, len(self.classes), self.confidence_threshold,
-                    self.nms_threshold, class_agnostic=True
+                    prediction_result, len(self.category_names), self.confidence_threshold,
+                    self.nms_threshold
                 )
         
         if (prediction_result[0] is not None):
@@ -101,10 +101,8 @@ class YoloXDetectionModel(DetectionModel):
 
     def _create_object_prediction_list_from_original_predictions(
         self,
-        image: np.ndarray,
         shift_amount_list: Optional[List[List[int]]] = [[0, 0]],
-        full_shape_list: Optional[List[List[int]]] = None,
-        image_size: int = None
+        full_shape_list: Optional[List[List[int]]] = None
     ):
         """
         self._original_predictions is converted to a list of prediction.ObjectPrediction and set to
