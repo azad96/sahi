@@ -17,7 +17,7 @@ class DetectionModel:
         config_path: Optional[str] = None,
         device: Optional[str] = None,
         mask_threshold: float = 0.5,
-        confidence_threshold: float = 0.3,
+        confidence_dict: dict = None,
         nms_threshold: float = 0.45,
         classes = None,
         category_mapping: Optional[Dict] = None,
@@ -52,7 +52,7 @@ class DetectionModel:
         self.model = None
         self.device = device
         self.mask_threshold = mask_threshold
-        self.confidence_threshold = confidence_threshold
+        self.confidence_dict = confidence_dict
         self.nms_threshold = nms_threshold
         self.classes = classes
         self.category_mapping = category_mapping

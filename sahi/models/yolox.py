@@ -42,7 +42,8 @@ class YoloXDetectionModel(DetectionModel):
         exp = get_exp(self.config_path, None)
         
         model = exp.get_model()
-        model.cuda()
+        # model.cuda()
+        model.to(self.device)
         model.eval()
         #print(model)
         self.model = model
@@ -72,12 +73,13 @@ class YoloXDetectionModel(DetectionModel):
         
         tensor_img = torch.from_numpy(tensor_img).unsqueeze(0)
         tensor_img = tensor_img.float()
-        tensor_img = tensor_img.cuda()
+        # tensor_img = tensor_img.cuda()
+        tensor_img.to(self.device)
 
         with torch.no_grad():
             prediction_result = self.model(tensor_img)
             prediction_result = postprocess(
-                    prediction_result, len(self.category_names), self.confidence_threshold,
+                    prediction_result, len(self.category_names), self.confidence_dict,
                     self.nms_threshold
                 )
         
@@ -140,7 +142,7 @@ class YoloXDetectionModel(DetectionModel):
               box = bboxes[ind]
               cls_id = int(bbclasses[ind])
               score = scores[ind]
-              if score < self.confidence_threshold:
+              if score < self.confidence_dict[cls_id]:
                 continue
               
               x0 = int(box[0])
